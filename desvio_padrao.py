@@ -72,4 +72,4 @@ dados_cpu = [
 
 desvio_padrao = statistics.stdev(dados_cpu)
 
-print(f'O desvio padrão dos dados é {desvio_padrao:.2f}')
+print(f'O desvio padrão dos dados é {desvio_padrao:.4f}')
