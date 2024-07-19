@@ -68,3 +68,6 @@ def variancia(dados_cpu):
 
 def coefic_variacao(desvio_padrao,media):
     return desvio_padrao/media    
+print(desvio_padrao)
+print(variancia)
+print (coefic_variacao)
