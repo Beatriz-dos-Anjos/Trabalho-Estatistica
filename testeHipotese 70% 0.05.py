@@ -64,7 +64,7 @@ sample_std = 14.969
 n = len(dados)
 
 # Média hipotética sob H0
-mu_0 = 80
+mu_0 = 70
 
 # Calculando o erro padrão
 se = sample_std / np.sqrt(n)
@@ -84,9 +84,9 @@ z_critico = 1.96
 alpha = 0.05
 
 if z < z_critico:
-    print("Aceitamos a hipótese nula (H0). A média de utilização da CPU é significativamente menor que 80%.")
+    print(f"Aceitamos a hipótese nula (H0). A média de utilização da CPU é significativamente menor que {mu_0}%.")
 else:
-    print("Falhamos em rejeitar a hipótese nula (H0). Não há evidência suficiente para afirmar que a média de utilização da CPU é menor que 80%.")
+    print(f"Falhamos em rejeitar a hipótese nula (H0). Não há evidência suficiente para afirmar que a média de utilização da CPU é menor que {mu_0}%.")
 
 # Plotando a distribuição normal e os valores de z
 x = np.linspace(-4, 4, 1000)
@@ -94,8 +94,8 @@ y = stats.norm.pdf(x, 0, 1)
 
 plt.plot(x, y, label='Distribuição Normal')
 plt.fill_between(x, 0, y, where=(x >= z_critico), color='red', alpha=0.5, label='Região Crítica')
-plt.axvline(z, color='blue', linestyle='dashed', linewidth=2, label=f'z calculado = {z:.2f}')
-plt.axvline(z_critico, color='red', linestyle='dashed', linewidth=2, label=f'z crítico = {z_critico:.2f}')
+plt.axvline(z, color='blue', linestyle='dashed', linewidth=2, label=f'z calculado = {z:.3f}')
+plt.axvline(z_critico, color='red', linestyle='dashed', linewidth=2, label=f'z crítico = {z_critico}')
 
 plt.title('Teste de Hipótese para Utilização de CPU')
 plt.xlabel('Valor de z')
