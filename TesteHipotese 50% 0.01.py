@@ -64,7 +64,7 @@ sample_std = 14.969
 n = len(dados)
 
 # Média hipotética sob H0
-mu_0 = 60
+mu_0 = 50
 
 # Calculando o erro padrão
 se = sample_std / np.sqrt(n)
