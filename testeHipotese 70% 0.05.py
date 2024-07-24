@@ -1,57 +1,8 @@
-#O número de classes foi calculando usando a regra de Sturges, que é uma regra empírica que determina o número de classes de um histograma 
-# de acordo com o número de amostras. A regra é dada pela fórmula: K= 1+log2(n). Onde K é o número de classes e n é o número de amostras.
-
-import pandas as pd
 import numpy as np
+from scipy import stats
 import matplotlib.pyplot as plt
 
-def criar_tabela_frequencia(dados, amplitude_classe, num_classes):
-    # Converter dados para um array NumPy para melhor performance
-    dados = np.array(dados)
-    
-# Calcular os intervalos de classes
-    minimo = dados.min()
-    maximo = minimo + amplitude_classe * num_classes
-    intervalos = np.arange(minimo, maximo + amplitude_classe, amplitude_classe)
-
-    # Contar frequências usando np.histogram
-    frequencia, bins = np.histogram(dados, bins=intervalos)
-    
-    # Calcular frequências adicionais
-    frequencia_acumulada = np.cumsum(frequencia)
-    frequencia_relativa = frequencia / len(dados)
-    frequencia_percentual = frequencia_relativa * 100
-    frequencia_percentual_acumulada = np.cumsum(frequencia_percentual)
-    
-    # Montar a tabela de distribuição de frequência
-    tabela = pd.DataFrame({
-        'Intervalo': [f'{bins[i]:.2f} - {bins[i+1]:.2f}' for i in range(len(bins) - 1)],
-        'Frequência': frequencia,
-        'Frequência Acumulada': frequencia_acumulada,
-        'Frequência Relativa': frequencia_relativa,
-        'Frequência Percentual': frequencia_percentual,
-        'Frequência Percentual Acumulada': frequencia_percentual_acumulada
-    })
-
-    return tabela
-
-def gerar_histograma(dados, amplitude_classe, num_classes):
-    minimo = np.min(dados)
-    maximo = minimo + amplitude_classe * num_classes
-    intervalos = np.arange(minimo, maximo + amplitude_classe, amplitude_classe)
-
-    # Plotar o histograma
-    plt.figure(figsize=(10, 6))
-    plt.hist(dados, bins=intervalos, edgecolor='black')
-    plt.xlabel('Intervalo')
-    plt.ylabel('Frequência')
-    plt.title('Histograma dos Dados')
-    plt.grid(axis='y', linestyle='--', alpha=0.7)
-
-    # Adicionar rótulos de intervalo no eixo x
-    plt.xticks(intervalos, rotation=45)
-    plt.show()
-
+# Dados fornecidos
 dados = [
     80.46, 71.83, 64.04, 56.15, 71.05, 70.50, 75.90, 66.61, 77.61, 63.41, 67.30, 67.19, 51.19, 68.16, 54.89, 43.26,
     61.49, 65.93, 45.83, 80.25, 86.10, 88.98, 52.67, 41.29, 47.16, 57.87, 48.12, 62.13, 51.37, 86.31, 86.11, 74.57,
@@ -105,9 +56,49 @@ dados = [
     52.79, 64.95, 74.75, 93.43, 42.55, 52.51, 51.56, 66.16, 79.11, 72.70, 74.01, 75.46, 72.44, 64.83, 55.40, 64.59
 ]
 
-num_classes = 11
-amplitude = 8
-tabela_frequencia = criar_tabela_frequencia(dados, amplitude, num_classes)
-print(tabela_frequencia)
-histograma = gerar_histograma(dados, amplitude, num_classes)
+# Média e desvio padrão da amostra
+sample_mean = 65.767
+sample_std = 14.969
 
+# Tamanho da amostra
+n = len(dados)
+
+# Média hipotética sob H0
+mu_0 = 70
+
+# Calculando o erro padrão
+se = sample_std / np.sqrt(n)
+
+# Calculando o z-score
+z = (sample_mean - mu_0) / se
+
+# Calculando o p-valor para uma cauda (H1: μ > 80)
+p_value = 1 - stats.norm.cdf(z)
+
+print(f"Estatística z: {z}")
+print(f"Valor p: {p_value}")
+
+z_critico = 1.96
+
+# Interpretando os resultados
+alpha = 0.05
+
+if z < z_critico:
+    print(f"Aceitamos a hipótese nula (H0). A média de utilização da CPU é significativamente menor que {mu_0}%.")
+else:
+    print(f"Falhamos em rejeitar a hipótese nula (H0). Não há evidência suficiente para afirmar que a média de utilização da CPU é menor que {mu_0}%.")
+
+# Plotando a distribuição normal e os valores de z
+x = np.linspace(-4, 4, 1000)
+y = stats.norm.pdf(x, 0, 1)
+
+plt.plot(x, y, label='Distribuição Normal')
+plt.fill_between(x, 0, y, where=(x >= z_critico), color='red', alpha=0.5, label='Região Crítica')
+plt.axvline(z, color='blue', linestyle='dashed', linewidth=2, label=f'z calculado = {z:.3f}')
+plt.axvline(z_critico, color='red', linestyle='dashed', linewidth=2, label=f'z crítico = {z_critico}')
+
+plt.title('Teste de Hipótese para Utilização de CPU')
+plt.xlabel('Valor de z')
+plt.ylabel('Densidade de Probabilidade')
+plt.legend()
+plt.show()
